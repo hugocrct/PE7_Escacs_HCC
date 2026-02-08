@@ -1,0 +1,32 @@
+@startuml
+title Validació d’un moviment il·legal - Diagrama de Seqüència
+
+actor Jugador
+participant UIConsola
+participant GameController
+participant MoveValidator
+participant Board
+
+loop fins moviment vàlid o abandonar
+    Jugador -> UIConsola : introdueix moviment
+    UIConsola -> GameController : enviarMoviment()
+    GameController -> Board : llegirEstat()
+    Board --> GameController : estatTauler
+    GameController -> MoveValidator : validarMoviment(dades, estatTauler)
+
+    alt Moviment IL·LEGAL
+        MoveValidator --> GameController : error(motiu)
+        GameController -> UIConsola : mostrarError(motiu)
+        UIConsola -> Jugador : demanarNouMoviment()
+        note right
+        El tauler NO es modifica
+        Es manté el mateix jugador
+        end note
+    else Moviment VÀLID
+        MoveValidator --> GameController : ok
+        GameController -> Board : aplicarMoviment()
+        GameController -> UIConsola : actualitzarVista()
+    end
+end
+
+@enduml
